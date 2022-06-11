@@ -3,19 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Repositories\OrderEloquentRepository;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    public function order()
+    private $repository;
+
+    public function __construct(OrderEloquentRepository $repository)
     {
-        return view('orders.order');
+        $this->repository = $repository;
     }
 
-    public function pay(Order $order)
+    public function index()
     {
+        return view('orders.index');
+    }
 
-        return view('orders.pay', compact('order'));
+    public function store(Request $request)
+    {
+        $order = $this->repository->save($request->all());
+
+        return redirect( route('order.show', ['id' => $order->id]) );
     }
 
     public function status()
@@ -23,27 +32,15 @@ class OrderController extends Controller
         return view('orders.status');
     }
 
-    public function all()
+    public function show(int $id)
     {
-        $orders = Order::all();
+        $order = $this->repository->find($id);
 
-        return view('orders.all', compact('orders'));
+        return view('orders.detail', compact('order'));
     }
 
-    public function show(Order $order)
+    public function update(Request $request, $id)
     {
-        return view('orders.status', compact('order'));
-    }
-
-    public function store(Request $request)
-    {
-        Order::create($request->all());
-
-        return redirect(route('pagos'));
-    }
-
-    public function update(Order $order, Request $request)
-    {
-        $order->update($request->all());
+        $this->repository->update($id, $request->all());
     }
 }

@@ -17,10 +17,10 @@
         <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{{ route('ordenes') }}">Tienda</a>
+              <a class="nav-link active" aria-current="page" href="{{ route('order.index') }}">Tienda</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('todas') }}">Ordenes</a>
+              <a class="nav-link" href="">Ordenes</a>
             </li>
         </ul>
         </div>

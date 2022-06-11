@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SaleController;
+use App\Http\Controllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,15 +15,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [OrderController::class, 'index'])->name('order.index');
+Route::get('/ordenes', [OrderController::class, 'index'])->name('order.index');
+Route::get('/ordenes/{id}', [OrderController::class, 'show'])->name('order.show');
+Route::post('/ordenes', [OrderController::class, 'store'])->name('order.store');
+Route::put('/ordenes/{id}', [OrderController::class, 'update'])->name('order.update');
 
-Route::get('/orders', [OrderController::class, 'order'])->name('ordenes');
-Route::get('/orders/{order}', [OrderController::class, 'show']);
-Route::get('/pay', [OrderController::class, 'pay'])->name('pagos');
-Route::get('/clients', [OrderController::class, 'client']);
-Route::get('/status', [OrderController::class, 'status'])->name('estado');
-Route::get('/all', [OrderController::class, 'all'])->name('todas');
-Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
-Route::put('/orders/{order}', [OrderController::class, 'update']);
+Route::get('/sales', [SaleController::class, '__invoke'])->name('sale');
+
+Route::get('/pago', [OrderController::class, 'index'])->name('pay.index');
+
+

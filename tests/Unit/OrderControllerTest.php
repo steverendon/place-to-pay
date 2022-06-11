@@ -31,48 +31,11 @@ class OrderControllerTest extends TestCase
             'status' => 'CREATED',
         ];
 
-        $reponse = $this->post('/orders', $data)
+        $reponse = $this->post(route('order.store'), $data)
             ->assertStatus(302)
-            ->assertRedirect(route('pagos'));
+            ->assertRedirect(route('order.show'));
 
         $this->assertDatabaseHas('orders', $data);
-    }
-
-    public function testItCanShowAOrder()
-    {
-        $data = [
-            'customer_name' => 'Steven Rendon',
-            'customer_email' => 'steven.rendon@hotmail.com',
-            'customer_mobile' => '3187773322',
-            'status' => 'CREATED',
-        ];
-
-        $order = Order::factory()->create($data);
-
-        $this->get("/orders/{$order->id}")
-            ->assertStatus(200)
-            ->assertViewIs('orders.status')
-            ->assertSee('Estado de la compra')
-            ->assertSee('Steven Rendon');
-    }
-
-    public function testItCanShowAllOrders()
-    {
-        Order::factory()->create([
-            'customer_name' => 'Steven Rendon',
-            'customer_email' => 'steven.rendon@hotmail.com',
-            'customer_mobile' => '3187773322',
-            'status' => 'CREATED',
-        ]);
-        $orders = Order::factory(3)->create();
-
-        $this->get("/all")
-            ->assertStatus(200)
-            ->assertSee('Ordenes de la tienda')
-            ->assertSee('Steven Rendon')
-            ->assertDontSee('James Rodriguez')
-            ->assertViewIs('orders.all')
-            ->assertViewHas('orders', Order::all());
     }
 
     public function testItCanShowOrderDetails()
@@ -84,9 +47,12 @@ class OrderControllerTest extends TestCase
             'status' => 'CREATED',
         ]);
 
-        $this->get(route('pagos', ['id' => $order->id]))
+        $this->get(route( 'order.show', ['id' => $order->id] ))
+            ->assertViewIs('orders.detail')
             ->assertSee('Resumen de la compra')
-            ->assertSee('Steven Rendon');
+            ->assertSee('Steven Rendon')
+            ->assertSee('steven.rendon@hotmail.com')
+            ->assertSee('3187773322');
     }
 
     public function testItCanUpdateAOrderStatus()
@@ -100,16 +66,11 @@ class OrderControllerTest extends TestCase
 
         $order = Order::factory()->create($data);
 
-        $newData = [
-            'customer_name' => 'Steven Rendon',
-            'customer_email' => 'steven.rendon@hotmail.com',
-            'customer_mobile' => '3187773322',
-            'status' => 'PAYED',
-        ];
+        $data['status'] = 'PAYED';
 
-        $order = $this->put("/orders/{$order->id}", $newData);
+        $order = $this->put(route('order.update', ['id' => $order->id]), $data);
 
-        $this->assertDatabaseHas('orders', $newData);
+        $this->assertDatabaseHas('orders', ['status' => 'PAYED']);
         $this->assertDatabaseMissing('orders', ['status' => 'CREATED']);
     }
 }
